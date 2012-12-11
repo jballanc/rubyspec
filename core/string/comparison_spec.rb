@@ -49,23 +49,20 @@ end
 describe "String#<=>" do
   ruby_version_is ""..."2.0" do
     it "returns nil if its argument does not provide #to_str" do
-      ("abc" <=> 1).should == nil
-      ("abc" <=> :abc).should == nil
-      ("abc" <=> mock('x')).should == nil
+      ("abc" <=> mock('x')).should be_nil
     end
 
     it "returns nil if its argument does not provide #<=>" do
       obj = mock('x')
-      ("abc" <=> obj).should == nil
+      ("abc" <=> obj).should be_nil
     end
 
     it "calls #to_str to convert the argument to a String and calls #<=> to compare with self" do
       obj = mock('x')
 
       # String#<=> merely checks if #to_str is defined on the object. It
-      # does not call the method.
-      obj.stub!(:to_str)
-
+      # does not call the method, and ignores any return value.
+      obj.should_receive(:to_str).and_return("aaa")
       obj.should_receive(:<=>).with("abc").and_return(1)
 
       ("abc" <=> obj).should == -1
@@ -74,19 +71,17 @@ describe "String#<=>" do
 
   ruby_version_is "2.0" do
     it "returns nil if its argument provides neither #to_str nor #<=>" do
-      ("abc" <=> 1).should == nil
-      ("abc" <=> :abc).should == nil
-      ("abc" <=> mock('x')).should == nil
+      ("abc" <=> mock('x')).should be_nil
     end
 
     it "uses the result of calling #to_str for comparison when #to_str is defined" do
       obj = mock('x')
-      obj.should_receive(:to_str).and_return("xyz")
+      obj.should_receive(:to_str).and_return("aaa")
 
-      ("abc" <=> obj).should == -1
+      ("abc" <=> obj).should == 1
     end
 
-    it "uses the result of calling  #<=> on the target when #<=> is defined but #to_str is not" do
+    it "uses the result of calling #<=> on its argument when #<=> is defined but #to_str is not" do
       obj = mock('x')
       obj.should_receive(:<=>).and_return(-1)
 
