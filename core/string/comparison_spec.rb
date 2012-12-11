@@ -62,7 +62,8 @@ describe "String#<=>" do
 
       # String#<=> merely checks if #to_str is defined on the object. It
       # does not call the method, and ignores any return value.
-      obj.should_receive(:to_str).and_return("aaa")
+      obj.stub!(:to_str)
+      obj.should_not_receive(:to_str)
       obj.should_receive(:<=>).with("abc").and_return(1)
 
       ("abc" <=> obj).should == -1
