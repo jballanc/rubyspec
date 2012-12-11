@@ -73,7 +73,7 @@ describe "String#<=>" do
   end
 
   ruby_version_is "2.0" do
-    it "returns nil if its argument doesn not provide #to_str or #<=>" do
+    it "returns nil if its argument does not provide #to_str nor #<=>" do
       ("abc" <=> 1).should == nil
       ("abc" <=> :abc).should == nil
       ("abc" <=> mock('x')).should == nil
